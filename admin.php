@@ -2,8 +2,8 @@
 require_once 'db.php';
 require_admin();
 
-$flash = $_SESSION['admin_flash'] ?? '';
-$error = $_SESSION['admin_error'] ?? '';
+$flash = isset($_SESSION['admin_flash']) ? $_SESSION['admin_flash'] : '';
+$error = isset($_SESSION['admin_error']) ? $_SESSION['admin_error'] : '';
 unset($_SESSION['admin_flash'], $_SESSION['admin_error']);
 
 function admin_redirect() {
@@ -12,16 +12,16 @@ function admin_redirect() {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
+    $action = isset($_POST['action']) ? $_POST['action'] : '';
 
     try {
         if ($action === 'create') {
-            $username = trim($_POST['username'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $password = $_POST['password'] ?? '';
-            $ip_address = trim($_POST['ip_address'] ?? '');
-            $room_name = trim($_POST['room_name'] ?? '');
-            $room_number = trim($_POST['room_number'] ?? '');
+            $username = trim(isset($_POST['username']) ? $_POST['username'] : '');
+            $email = trim(isset($_POST['email']) ? $_POST['email'] : '');
+            $password = isset($_POST['password']) ? $_POST['password'] : '';
+            $ip_address = trim(isset($_POST['ip_address']) ? $_POST['ip_address'] : '');
+            $room_name = trim(isset($_POST['room_name']) ? $_POST['room_name'] : '');
+            $room_number = trim(isset($_POST['room_number']) ? $_POST['room_number'] : '');
             $is_admin = isset($_POST['is_admin']) ? 1 : 0;
 
             if ($username === '') {
@@ -60,12 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($action === 'update') {
             $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-            $username = trim($_POST['username'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $password = $_POST['password'] ?? '';
-            $ip_address = trim($_POST['ip_address'] ?? '');
-            $room_name = trim($_POST['room_name'] ?? '');
-            $room_number = trim($_POST['room_number'] ?? '');
+            $username = trim(isset($_POST['username']) ? $_POST['username'] : '');
+            $email = trim(isset($_POST['email']) ? $_POST['email'] : '');
+            $password = isset($_POST['password']) ? $_POST['password'] : '';
+            $ip_address = trim(isset($_POST['ip_address']) ? $_POST['ip_address'] : '');
+            $room_name = trim(isset($_POST['room_name']) ? $_POST['room_name'] : '');
+            $room_number = trim(isset($_POST['room_number']) ? $_POST['room_number'] : '');
             $is_admin = isset($_POST['is_admin']) ? 1 : 0;
 
             if (!$id) {
@@ -175,7 +175,7 @@ $users = $db->query('
         <a href="index.php" class="logo">게시판</a>
         <div class="nav-links">
             <a href="index.php">목록</a>
-            <a href="dashboard.php"><?= htmlspecialchars($_SESSION['username'] ?? '계정') ?></a>
+            <a href="dashboard.php"><?= htmlspecialchars(isset($_SESSION['username']) ? $_SESSION['username'] : '계정') ?></a>
             <a href="logout.php">로그아웃</a>
             <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환" aria-pressed="false">
                 <span class="theme-toggle-track">
@@ -237,9 +237,9 @@ $users = $db->query('
                             <input type="text" name="username" value="<?= htmlspecialchars($user['username']) ?>" required>
                             <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
                             <input type="password" name="password" placeholder="새 비밀번호">
-                            <input type="text" name="ip_address" value="<?= htmlspecialchars($user['ip_address'] ?? '') ?>" placeholder="IP">
-                            <input type="text" name="room_name" value="<?= htmlspecialchars($user['room_name'] ?? '') ?>" placeholder="룹명">
-                            <input type="text" name="room_number" value="<?= htmlspecialchars($user['room_number'] ?? '') ?>" placeholder="룹번">
+                            <input type="text" name="ip_address" value="<?= htmlspecialchars(isset($user['ip_address']) ? $user['ip_address'] : '') ?>" placeholder="IP">
+                            <input type="text" name="room_name" value="<?= htmlspecialchars(isset($user['room_name']) ? $user['room_name'] : '') ?>" placeholder="룹명">
+                            <input type="text" name="room_number" value="<?= htmlspecialchars(isset($user['room_number']) ? $user['room_number'] : '') ?>" placeholder="룹번">
                             <label class="admin-check">
                                 <input type="checkbox" name="is_admin" value="1" <?= $user['is_admin'] ? 'checked' : '' ?> <?= (int) $user['id'] === (int) $_SESSION['user_id'] ? 'disabled' : '' ?>>
                                 관리자

@@ -6,10 +6,10 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $password_confirm = $_POST['password_confirm'] ?? '';
+    $username = trim(isset($_POST['username']) ? $_POST['username'] : '');
+    $email = trim(isset($_POST['email']) ? $_POST['email'] : '');
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $password_confirm = isset($_POST['password_confirm']) ? $_POST['password_confirm'] : '';
 
     if ($username === '' || $email === '' || $password === '') {
         $error = '모든 항목을 입력해 주세요.';
@@ -77,11 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" action="signup.php">
                 <div class="form-group">
                     <label for="username">아이디</label>
-                    <input type="text" id="username" name="username" placeholder="3자 이상" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required>
+                    <input type="text" id="username" name="username" placeholder="3자 이상" value="<?= htmlspecialchars(isset($_POST['username']) ? $_POST['username'] : '') ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="email">이메일</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" value="<?= htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : '') ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="password">비밀번호</label>

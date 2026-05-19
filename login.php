@@ -3,12 +3,12 @@ require_once 'db.php';
 require_logout();
 
 $error = '';
-$flash = $_SESSION['flash'] ?? '';
+$flash = isset($_SESSION['flash']) ? $_SESSION['flash'] : '';
 unset($_SESSION['flash']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $username = trim(isset($_POST['username']) ? $_POST['username'] : '');
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
 
     if ($username === '' || $password === '') {
         $error = '아이디와 비밀번호를 입력해 주세요.';
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" action="login.php">
                 <div class="form-group">
                     <label for="username">아이디 또는 이메일</label>
-                    <input type="text" id="username" name="username" placeholder="아이디 또는 이메일" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required autofocus>
+                    <input type="text" id="username" name="username" placeholder="아이디 또는 이메일" value="<?= htmlspecialchars(isset($_POST['username']) ? $_POST['username'] : '') ?>" required autofocus>
                 </div>
                 <div class="form-group">
                     <label for="password">비밀번호</label>

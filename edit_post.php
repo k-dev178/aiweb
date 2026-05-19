@@ -25,14 +25,14 @@ if ((int) $post['user_id'] !== (int) $_SESSION['user_id']) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $content = trim($_POST['content'] ?? '');
+    $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
+    $content = trim(isset($_POST['content']) ? $_POST['content'] : '');
 
     if ($title === '' || $content === '') {
         $error = '제목과 내용을 모두 입력해 주세요.';
-    } elseif (mb_strlen($title) > 140) {
+    } elseif (text_length($title) > 140) {
         $error = '제목은 140자 이하로 입력해 주세요.';
-    } elseif (mb_strlen($content) > 1000) {
+    } elseif (text_length($content) > 1000) {
         $error = '내용은 1000자 이하로 입력해 주세요.';
     } else {
         $stmt = $db->prepare('UPDATE posts SET title = ?, content = ? WHERE id = ? AND user_id = ?');

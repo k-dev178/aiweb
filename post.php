@@ -44,7 +44,7 @@ $can_delete = $can_edit || is_admin();
                 <?php if (is_admin()): ?>
                     <a href="admin.php">관리자</a>
                 <?php endif; ?>
-                <a href="dashboard.php"><?= htmlspecialchars($_SESSION['username'] ?? '계정') ?></a>
+                <a href="dashboard.php"><?= htmlspecialchars(isset($_SESSION['username']) ? $_SESSION['username'] : '계정') ?></a>
                 <a href="logout.php">로그아웃</a>
             <?php else: ?>
                 <a href="login.php">로그인</a>
@@ -64,7 +64,7 @@ $can_delete = $can_edit || is_admin();
                 <p class="post-detail-kicker">게시글 #<?= htmlspecialchars($post['id']) ?></p>
                 <h1><?= htmlspecialchars($post['title']) ?></h1>
                 <div class="post-detail-meta">
-                    <span><?= htmlspecialchars($post['username'] ?? '방문자') ?></span>
+                    <span><?= htmlspecialchars(isset($post['username']) ? $post['username'] : '방문자') ?></span>
                     <time><?= htmlspecialchars($post['created_at']) ?></time>
                 </div>
                 <?php if ($can_edit || $can_delete): ?>

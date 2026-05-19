@@ -1,6 +1,73 @@
 <?php
 session_start();
 
+if (!defined('PASSWORD_BCRYPT')) {
+    define('PASSWORD_BCRYPT', 1);
+}
+
+if (!defined('PASSWORD_DEFAULT')) {
+    define('PASSWORD_DEFAULT', PASSWORD_BCRYPT);
+}
+
+if (!function_exists('hash_equals')) {
+    function hash_equals($known_string, $user_string) {
+        if (!is_string($known_string) || !is_string($user_string)) {
+            return false;
+        }
+
+        if (strlen($known_string) !== strlen($user_string)) {
+            return false;
+        }
+
+        $result = 0;
+        for ($i = 0; $i < strlen($known_string); $i++) {
+            $result |= ord($known_string[$i]) ^ ord($user_string[$i]);
+        }
+
+        return $result === 0;
+    }
+}
+
+if (!function_exists('password_hash')) {
+    function password_hash($password, $algo, array $options = array()) {
+        $cost = isset($options['cost']) ? (int) $options['cost'] : 10;
+        $cost = max(4, min(31, $cost));
+
+        if (function_exists('openssl_random_pseudo_bytes')) {
+            $rawSalt = openssl_random_pseudo_bytes(16);
+        } else {
+            $rawSalt = uniqid(mt_rand(), true);
+        }
+
+        if ($rawSalt === false || $rawSalt === '') {
+            $rawSalt = uniqid(mt_rand(), true);
+        }
+
+        $salt = substr(str_replace('=', '', strtr(base64_encode($rawSalt), '+', '.')), 0, 22);
+        $hash = crypt($password, sprintf('$2y$%02d$', $cost) . $salt);
+
+        return strlen($hash) >= 60 ? $hash : false;
+    }
+}
+
+if (!function_exists('password_verify')) {
+    function password_verify($password, $hash) {
+        if (!is_string($hash) || $hash === '') {
+            return false;
+        }
+
+        return hash_equals($hash, crypt($password, $hash));
+    }
+}
+
+function text_length($value) {
+    if (function_exists('mb_strlen')) {
+        return mb_strlen($value, 'UTF-8');
+    }
+
+    return strlen($value);
+}
+
 $db_host = 'localhost';
 $db_name = 'aiweb';
 $db_user = 'aiweb_user';
@@ -101,7 +168,11 @@ try {
 
     $emailDomain = 'gemma.sm.jj.ac.kr';
 
-    foreach ($defaultUsers as [$username, $ipAddress, $roomName, $roomNumber]) {
+    foreach ($defaultUsers as $defaultUser) {
+        $username = $defaultUser[0];
+        $ipAddress = $defaultUser[1];
+        $roomName = $defaultUser[2];
+        $roomNumber = $defaultUser[3];
         $isAdmin = $username === 'gemma' ? 1 : 0;
         $upsert->execute([
             $username,

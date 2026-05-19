@@ -49,15 +49,15 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 </div>
                 <div class="user-info-row">
                     <span class="label">IP</span>
-                    <span class="value"><?= htmlspecialchars($user['ip_address'] ?? '-') ?></span>
+                    <span class="value"><?= htmlspecialchars(isset($user['ip_address']) ? $user['ip_address'] : '-') ?></span>
                 </div>
                 <div class="user-info-row">
                     <span class="label">룹명</span>
-                    <span class="value"><?= htmlspecialchars($user['room_name'] ?? '-') ?></span>
+                    <span class="value"><?= htmlspecialchars(isset($user['room_name']) ? $user['room_name'] : '-') ?></span>
                 </div>
                 <div class="user-info-row">
                     <span class="label">룹번</span>
-                    <span class="value"><?= htmlspecialchars($user['room_number'] ?? '-') ?></span>
+                    <span class="value"><?= htmlspecialchars(isset($user['room_number']) ? $user['room_number'] : '-') ?></span>
                 </div>
                 <div class="user-info-row">
                     <span class="label">가입일</span>

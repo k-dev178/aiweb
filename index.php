@@ -2,7 +2,7 @@
 require_once 'db.php';
 
 $post_error = '';
-$post_flash = $_SESSION['index_post_flash'] ?? '';
+$post_flash = isset($_SESSION['index_post_flash']) ? $_SESSION['index_post_flash'] : '';
 unset($_SESSION['index_post_flash']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -12,17 +12,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $title = trim($_POST['title'] ?? '');
-    $content = trim($_POST['content'] ?? '');
+    $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
+    $content = trim(isset($_POST['content']) ? $_POST['content'] : '');
 
     if ($title === '' || $content === '') {
         $post_error = '제목과 내용을 모두 입력해 주세요.';
-    } elseif (mb_strlen($title) > 140) {
+    } elseif (text_length($title) > 140) {
         $post_error = '제목은 140자 이하로 입력해 주세요.';
-    } elseif (mb_strlen($content) > 1000) {
+    } elseif (text_length($content) > 1000) {
         $post_error = '내용은 1000자 이하로 입력해 주세요.';
     } else {
-        $user_id = $_SESSION['user_id'] ?? null;
+        $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
         $stmt = $db->prepare('INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)');
         $stmt->execute([$user_id, $title, $content]);
         $_SESSION['index_post_flash'] = '게시글이 저장되었습니다.';
@@ -58,7 +58,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (is_admin()): ?>
                     <a href="admin.php">관리자</a>
                 <?php endif; ?>
-                <a href="dashboard.php"><?= htmlspecialchars($_SESSION['username'] ?? '계정') ?></a>
+                <a href="dashboard.php"><?= htmlspecialchars(isset($_SESSION['username']) ? $_SESSION['username'] : '계정') ?></a>
                 <a href="logout.php">로그아웃</a>
             <?php else: ?>
                 <a href="login.php">로그인</a>
@@ -100,11 +100,11 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <form method="POST" action="index.php#posts" class="post-form">
                     <div class="form-group">
                         <label for="title">제목</label>
-                        <input type="text" id="title" name="title" maxlength="140" placeholder="제목을 입력하세요." value="<?= htmlspecialchars($_POST['title'] ?? '') ?>" required>
+                        <input type="text" id="title" name="title" maxlength="140" placeholder="제목을 입력하세요." value="<?= htmlspecialchars(isset($_POST['title']) ? $_POST['title'] : '') ?>" required>
                     </div>
                     <div class="form-group">
                         <label for="content">내용</label>
-                        <textarea id="content" name="content" rows="7" maxlength="1000" placeholder="내용을 입력하세요." required><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
+                        <textarea id="content" name="content" rows="7" maxlength="1000" placeholder="내용을 입력하세요." required><?= htmlspecialchars(isset($_POST['content']) ? $_POST['content'] : '') ?></textarea>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-submit">게시글 등록</button>
@@ -141,7 +141,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <h3><?= htmlspecialchars($post['title']) ?></h3>
                                 <p><?= nl2br(htmlspecialchars($post['content'])) ?></p>
                             </div>
-                            <span class="post-author"><?= htmlspecialchars($post['username'] ?? '방문자') ?></span>
+                            <span class="post-author"><?= htmlspecialchars(isset($post['username']) ? $post['username'] : '방문자') ?></span>
                             <time><?= htmlspecialchars($post['created_at']) ?></time>
                         </a>
                     <?php endforeach; ?>

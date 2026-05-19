@@ -5,8 +5,7 @@ CREATE DATABASE IF NOT EXISTS aiweb
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
-CREATE USER IF NOT EXISTS 'aiweb_user'@'localhost' IDENTIFIED BY 'wjsansrk';
-GRANT ALL PRIVILEGES ON aiweb.* TO 'aiweb_user'@'localhost';
+GRANT ALL PRIVILEGES ON aiweb.* TO 'aiweb_user'@'localhost' IDENTIFIED BY 'wjsansrk';
 FLUSH PRIVILEGES;
 
 USE aiweb;
