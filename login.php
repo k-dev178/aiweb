@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['email'] = $user['email'];
+            $_SESSION['is_admin'] = (bool) $user['is_admin'];
             header('Location: dashboard.php');
             exit;
         } else {
@@ -35,16 +36,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인 — AIWeb</title>
+    <title>로그인 - 글 저장소</title>
+    <script>
+        document.documentElement.dataset.theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+    </script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <a href="index.php" class="logo">AI<span>Web</span></a>
+    <header class="navbar">
+        <a href="index.php" class="logo">글 저장소</a>
         <div class="nav-links">
             <a href="signup.php" class="btn-primary">회원가입</a>
+            <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환" aria-pressed="false">
+                <span class="theme-toggle-track">
+                    <span class="theme-toggle-thumb"></span>
+                </span>
+            </button>
         </div>
-    </nav>
+    </header>
 
     <div class="auth-wrapper">
         <div class="auth-card">
@@ -77,5 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </p>
         </div>
     </div>
+    <script src="theme.js"></script>
 </body>
 </html>
