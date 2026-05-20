@@ -1,5 +1,13 @@
 <?php
 require_once 'db.php';
+require_login();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    die('허용되지 않은 요청입니다.');
+}
+
+require_csrf();
 
 $_SESSION = [];
 

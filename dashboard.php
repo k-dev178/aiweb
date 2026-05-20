@@ -25,7 +25,10 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 <a href="admin.php">관리자</a>
             <?php endif; ?>
             <a href="index.php">글쓰기</a>
-            <a href="logout.php">로그아웃</a>
+            <form method="POST" action="logout.php" class="nav-form">
+                <?= csrf_field() ?>
+                <button type="submit" class="nav-link-button">로그아웃</button>
+            </form>
             <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환" aria-pressed="false">
                 <span class="theme-toggle-track">
                     <span class="theme-toggle-thumb"></span>

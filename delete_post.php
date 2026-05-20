@@ -7,6 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die('허용되지 않은 요청입니다.');
 }
 
+require_csrf();
+
 $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 if (!$post_id) {
     http_response_code(404);

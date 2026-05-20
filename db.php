@@ -1,5 +1,13 @@
 <?php
+$sessionSecure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+session_set_cookie_params(0, '/', '', $sessionSecure, true);
 session_start();
+
+if (PHP_SAPI !== 'cli' && !headers_sent()) {
+    header('X-Frame-Options: SAMEORIGIN');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: same-origin');
+}
 
 if (!defined('PASSWORD_BCRYPT')) {
     define('PASSWORD_BCRYPT', 1);
@@ -66,6 +74,53 @@ function text_length($value) {
     }
 
     return strlen($value);
+}
+
+function e($value) {
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+}
+
+function random_hex($bytes) {
+    if (function_exists('openssl_random_pseudo_bytes')) {
+        $raw = openssl_random_pseudo_bytes($bytes);
+        if ($raw !== false && $raw !== '') {
+            return bin2hex($raw);
+        }
+    }
+
+    return sha1(uniqid(mt_rand(), true) . microtime(true));
+}
+
+function csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = random_hex(32);
+    }
+
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_field() {
+    return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
+}
+
+function require_csrf() {
+    $token = isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '';
+
+    if (!hash_equals(csrf_token(), $token)) {
+        http_response_code(400);
+        die('잘못된 요청입니다.');
+    }
+}
+
+function is_valid_username($username) {
+    return (bool) preg_match('/\A[a-zA-Z0-9_]{3,50}\z/', $username);
+}
+
+function is_allowed_email_domain($email) {
+    $email = strtolower($email);
+    $suffix = '@gemma.sm.jj.ac.kr';
+
+    return substr($email, -strlen($suffix)) === $suffix;
 }
 
 $db_host = 'localhost';
@@ -158,12 +213,7 @@ try {
         INSERT INTO users (username, email, password, ip_address, room_name, room_number, is_admin)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
-            email = VALUES(email),
-            password = VALUES(password),
-            ip_address = VALUES(ip_address),
-            room_name = VALUES(room_name),
-            room_number = VALUES(room_number),
-            is_admin = VALUES(is_admin)
+            is_admin = IF(VALUES(is_admin) = 1, 1, is_admin)
     ');
 
     $emailDomain = 'gemma.sm.jj.ac.kr';
@@ -185,35 +235,59 @@ try {
         ]);
     }
 } catch (PDOException $e) {
-    die('DB 연결 실패: ' . $e->getMessage());
+    http_response_code(500);
+    die('DB 연결 실패. 설정을 확인하세요.');
+}
+
+function current_user() {
+    if (!isset($_SESSION['user_id'])) {
+        return false;
+    }
+
+    static $loaded = false;
+    static $loadedId = null;
+    static $user = false;
+
+    $sessionUserId = (int) $_SESSION['user_id'];
+    if ($loaded && $loadedId === $sessionUserId) {
+        return $user;
+    }
+
+    global $db;
+    $stmt = $db->prepare('SELECT id, username, email, is_admin FROM users WHERE id = ?');
+    $stmt->execute([$sessionUserId]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $loaded = true;
+    $loadedId = $sessionUserId;
+
+    if (!$user) {
+        unset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['email'], $_SESSION['is_admin']);
+        return false;
+    }
+
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['email'] = $user['email'];
+    $_SESSION['is_admin'] = (bool) $user['is_admin'];
+
+    return $user;
 }
 
 function is_logged_in() {
-    return isset($_SESSION['user_id']);
+    return current_user() !== false;
 }
 
 function require_login() {
     if (!is_logged_in()) {
+        $_SESSION['flash'] = '로그인 후 이용할 수 있습니다.';
         header('Location: login.php');
         exit;
     }
 }
 
 function is_admin() {
-    if (!is_logged_in()) {
-        return false;
-    }
+    $user = current_user();
 
-    if (isset($_SESSION['is_admin'])) {
-        return (bool) $_SESSION['is_admin'];
-    }
-
-    global $db;
-    $stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
-    $stmt->execute([$_SESSION['user_id']]);
-    $_SESSION['is_admin'] = (bool) $stmt->fetchColumn();
-
-    return (bool) $_SESSION['is_admin'];
+    return $user && (int) $user['is_admin'] === 1;
 }
 
 function require_admin() {

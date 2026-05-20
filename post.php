@@ -45,7 +45,10 @@ $can_delete = $can_edit || is_admin();
                     <a href="admin.php">관리자</a>
                 <?php endif; ?>
                 <a href="dashboard.php"><?= htmlspecialchars(isset($_SESSION['username']) ? $_SESSION['username'] : '계정') ?></a>
-                <a href="logout.php">로그아웃</a>
+                <form method="POST" action="logout.php" class="nav-form">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="nav-link-button">로그아웃</button>
+                </form>
             <?php else: ?>
                 <a href="login.php">로그인</a>
             <?php endif; ?>
@@ -74,6 +77,7 @@ $can_delete = $can_edit || is_admin();
                         <?php endif; ?>
                         <?php if ($can_delete): ?>
                             <form method="POST" action="delete_post.php" onsubmit="return confirm('게시글을 삭제할까요?');">
+                                <?= csrf_field() ?>
                                 <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
                                 <button type="submit" class="btn btn-danger">삭제</button>
                             </form>

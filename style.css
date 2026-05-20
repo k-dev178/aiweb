@@ -176,8 +176,29 @@ code {
     white-space: nowrap;
 }
 
+.nav-form {
+    display: inline-flex;
+}
+
+.nav-link-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0.35rem 0.66rem;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
 .nav-links a:hover,
-.nav-links a.btn-primary {
+.nav-links a.btn-primary,
+.nav-link-button:hover {
     background: var(--pane);
     color: var(--blue);
 }
@@ -854,6 +875,12 @@ input:disabled {
     }
 
     .nav-links a {
+        min-height: 28px;
+        padding: 0.3rem 0.46rem;
+        font-size: 0.84rem;
+    }
+
+    .nav-link-button {
         min-height: 28px;
         padding: 0.3rem 0.46rem;
         font-size: 0.84rem;

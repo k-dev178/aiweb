@@ -42,12 +42,7 @@ INSERT INTO users (username, email, password, ip_address, room_name, room_number
     ('silas', 'silas@gemma.sm.jj.ac.kr', '$2y$12$Kv6KYDvBFh.EOthxjfIy8eYrPYV7e1cRyUJ4Dpy3yxuqaqMBP548y', '.147', 'kt', '1000', 0),
     ('nigel', 'nigel@gemma.sm.jj.ac.kr', '$2y$12$Kv6KYDvBFh.EOthxjfIy8eYrPYV7e1cRyUJ4Dpy3yxuqaqMBP548y', '.148', 'lgt', '1002', 0)
 ON DUPLICATE KEY UPDATE
-    email = VALUES(email),
-    password = VALUES(password),
-    ip_address = VALUES(ip_address),
-    room_name = VALUES(room_name),
-    room_number = VALUES(room_number),
-    is_admin = VALUES(is_admin);
+    is_admin = IF(VALUES(is_admin) = 1, 1, is_admin);
 
 CREATE TABLE IF NOT EXISTS posts (
     id INT AUTO_INCREMENT PRIMARY KEY,

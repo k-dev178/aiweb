@@ -12,6 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    require_csrf();
+
     $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
     $content = trim(isset($_POST['content']) ? $_POST['content'] : '');
 
@@ -59,7 +61,10 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <a href="admin.php">관리자</a>
                 <?php endif; ?>
                 <a href="dashboard.php"><?= htmlspecialchars(isset($_SESSION['username']) ? $_SESSION['username'] : '계정') ?></a>
-                <a href="logout.php">로그아웃</a>
+                <form method="POST" action="logout.php" class="nav-form">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="nav-link-button">로그아웃</button>
+                </form>
             <?php else: ?>
                 <a href="login.php">로그인</a>
             <?php endif; ?>
@@ -98,6 +103,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <?php if (is_logged_in()): ?>
                 <form method="POST" action="index.php#posts" class="post-form">
+                    <?= csrf_field() ?>
                     <div class="form-group">
                         <label for="title">제목</label>
                         <input type="text" id="title" name="title" maxlength="140" placeholder="제목을 입력하세요." value="<?= htmlspecialchars(isset($_POST['title']) ? $_POST['title'] : '') ?>" required>

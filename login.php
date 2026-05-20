@@ -7,6 +7,8 @@ $flash = isset($_SESSION['flash']) ? $_SESSION['flash'] : '';
 unset($_SESSION['flash']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_csrf();
+
     $username = trim(isset($_POST['username']) ? $_POST['username'] : '');
     $password = isset($_POST['password']) ? $_POST['password'] : '';
 
@@ -46,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <header class="navbar">
         <a href="index.php" class="logo">글 저장소</a>
         <div class="nav-links">
-            <a href="signup.php" class="btn-primary">회원가입</a>
+            <a href="index.php">목록</a>
             <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환" aria-pressed="false">
                 <span class="theme-toggle-track">
                     <span class="theme-toggle-thumb"></span>
@@ -68,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" action="login.php">
+                <?= csrf_field() ?>
                 <div class="form-group">
                     <label for="username">아이디 또는 이메일</label>
                     <input type="text" id="username" name="username" placeholder="아이디 또는 이메일" value="<?= htmlspecialchars(isset($_POST['username']) ? $_POST['username'] : '') ?>" required autofocus>
@@ -78,12 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <button type="submit" class="btn-submit">로그인</button>
             </form>
-
-            <div class="divider">또는</div>
-
-            <p class="auth-footer">
-                계정이 없으신가요? <a href="signup.php">회원가입</a>
-            </p>
         </div>
     </div>
     <script src="theme.js"></script>

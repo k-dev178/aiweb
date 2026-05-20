@@ -25,6 +25,8 @@ if ((int) $post['user_id'] !== (int) $_SESSION['user_id']) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_csrf();
+
     $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
     $content = trim(isset($_POST['content']) ? $_POST['content'] : '');
 
@@ -67,7 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="index.php" class="logo">게시판</a>
         <div class="nav-links">
             <a href="post.php?id=<?= urlencode((string) $post_id) ?>">상세</a>
-            <a href="logout.php">로그아웃</a>
+            <form method="POST" action="logout.php" class="nav-form">
+                <?= csrf_field() ?>
+                <button type="submit" class="nav-link-button">로그아웃</button>
+            </form>
             <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환" aria-pressed="false">
                 <span class="theme-toggle-track">
                     <span class="theme-toggle-thumb"></span>
@@ -87,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" action="edit_post.php" class="post-form">
+                <?= csrf_field() ?>
                 <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
                 <div class="form-group">
                     <label for="title">제목</label>
